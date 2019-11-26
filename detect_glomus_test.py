@@ -428,7 +428,7 @@ if __name__ == '__main__':
     TRAIN_SET = body.replace('test', 'train')
     staining_dir = GlomusHandler.get_staining_type(args.data_category)
     TRAIN_MODEL = args.model
-    PATH_TO_CKPT = os.path.join(args.model, TRAIN_MODEL, 'frozen_inference_graph.pb')
+    PATH_TO_CKPT = os.path.join(args.model,  'frozen_inference_graph.pb')
     '''Load Tensorflow Model into Memory'''
     detection_graph = tf.Graph()
     with detection_graph.as_default():
