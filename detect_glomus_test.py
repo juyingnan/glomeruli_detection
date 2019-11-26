@@ -11,7 +11,7 @@ This detector is the first step of the detection procedure as follows.
 import argparse
 import os
 import math
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import numpy as np
 import datetime
 import time
@@ -19,12 +19,15 @@ from glomus_handler import GlomusHandler
 from PIL import Image
 import openslide
 
+tf.disable_v2_behavior()
+
 
 class GlomusDetector(GlomusHandler):
     """
     This class has the functions of detecting the regions of glomeruli
     from multi-stained Whole Slide Images(WSIs) of human renal tissue sections.
     """
+
     def __init__(self, data_category, target_list, data_dir, output_dir, output_file_ext,
                  window_size, overlap_ratio, conf_threshold):
         """
@@ -135,7 +138,7 @@ class GlomusDetector(GlomusHandler):
                                 '''Line starting with '#' is comment line and will not be processed.'''
                                 pass
                             else:
-                                file_name = line_parts[1] #.decode('utf-8')
+                                file_name = line_parts[1]  # .decode('utf-8')
 
                                 '''Get a processing target file'''
                                 target_file_path = os.path.join(self.data_dir, self.staining_dir, specimen_id)
@@ -151,8 +154,10 @@ class GlomusDetector(GlomusHandler):
 
                                         if self.image_type is not None:
                                             start_time = time.time()
-                                            self.split(sess, site_name, self.staining_dir, specimen_id, candidate, output_file,
-                                                       image_tensor, detection_boxes, detection_scores, detection_classes,
+                                            self.split(sess, site_name, self.staining_dir, specimen_id, candidate,
+                                                       output_file,
+                                                       image_tensor, detection_boxes, detection_scores,
+                                                       detection_classes,
                                                        num_detections)
                                             duration = time.time() - start_time
                                             log_file.write('"{}",{}\n'.format(file_name, duration))
@@ -179,7 +184,8 @@ class GlomusDetector(GlomusHandler):
         if self.image_type == 'png':
             with Image.open(os.path.join(self.data_dir, staining_dir, patient_id, file_name)) as img:
                 self.scan_region_from_image(sess, img, site_name, patient_id, file_name, output_file,
-                                 image_tensor, detection_boxes, detection_scores, detection_classes, num_detections)
+                                            image_tensor, detection_boxes, detection_scores, detection_classes,
+                                            num_detections)
         else:
             with openslide.open_slide(os.path.join(self.data_dir, staining_dir, patient_id, file_name)) as slide:
                 self.org_slide_width, self.org_slide_height = slide.dimensions
@@ -228,7 +234,8 @@ class GlomusDetector(GlomusHandler):
                 im = np.asarray(region)
 
                 '''execute the detecting core process'''
-                bs = self.detect_box(sess, image_tensor, detection_boxes, detection_scores, detection_classes, num_detections,
+                bs = self.detect_box(sess, image_tensor, detection_boxes, detection_scores, detection_classes,
+                                     num_detections,
                                      im, window_x, window_y, thresh=self.CONF_THRESH)
 
                 self.write_detected_result(bs, i, j, x_start * self.slide_downsample, y_start * self.slide_downsample,
@@ -386,6 +393,7 @@ class GlomusDetector(GlomusHandler):
         '''
         return gt_bboxes_score_precision
 
+
 def parse_args():
     """
     Parse input arguments
@@ -403,7 +411,8 @@ def parse_args():
                         default='_GlomusList')
     parser.add_argument('--window_size', dest='window_size', help="Please set --window_size", type=int)
     parser.add_argument('--overlap_ratio', dest='overlap_ratio', help="Please set --overlap_ratio", type=float)
-    parser.add_argument('--conf_threshold', dest='conf_threshold', help="Please set --conf_threshold", type=float, default=0.6)
+    parser.add_argument('--conf_threshold', dest='conf_threshold', help="Please set --conf_threshold", type=float,
+                        default=0.6)
 
     return parser.parse_args()
 
