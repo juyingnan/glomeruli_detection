@@ -16,7 +16,7 @@ import csv
 from PIL import Image
 from PIL import ImageDraw, ImageFont
 import re
-
+Image.MAX_IMAGE_PIXELS = None
 
 class EvalRecallPrecision(AnnotationHandler):
     """unit for the Result Evaluation and Visualization"""

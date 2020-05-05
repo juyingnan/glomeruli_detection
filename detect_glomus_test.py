@@ -20,7 +20,7 @@ from PIL import Image
 import openslide
 
 tf.disable_v2_behavior()
-
+Image.MAX_IMAGE_PIXELS = None
 
 class GlomusDetector(GlomusHandler):
     """
@@ -419,7 +419,6 @@ def parse_args():
 
 if __name__ == '__main__':
     print('Tensorflow version:{}'.format(tf.__version__))
-
     args = parse_args()
 
     # load network
@@ -443,7 +442,7 @@ if __name__ == '__main__':
     # The setting of visible_device_list does not work(?).
     # If you want to limit the GPU to be used, set the environment variable CUDA_VISIBLE_DEVICES to limit it.
     tfConfig = tf.ConfigProto(allow_soft_placement=True,
-                              gpu_options=tf.GPUOptions(per_process_gpu_memory_fraction=0.45, allow_growth=True
+                              gpu_options=tf.GPUOptions(allow_growth=True
                                                         # , visible_device_list="0"
                                                         ),
                               log_device_placement=True

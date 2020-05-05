@@ -15,7 +15,6 @@ from glomus_handler import GlomusHandler
 import time
 import openslide
 
-
 class MargeOverlapedGlomusException(Exception):
     pass
 
